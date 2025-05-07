@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auto Accident Lead Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 2em auto;
+      background: #f9f9f9;
+      padding: 2em;
+      border: 1px solid #ddd;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 1em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.3em;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    fieldset {
+      padding: 1em;
+      margin-top: 1.5em;
+      border: 1px solid #bbb;
+      background: #fff;
+    }
+
+    button {
+      padding: 0.8em 1.5em;
+      background: #007bff;
+      color: white;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 1em;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    pre {
+      background: #f4f4f4;
+      padding: 1em;
+      border: 1px solid #ccc;
+      margin-top: 2em;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h2>Auto Accident Lead Form</h2>
+  <form id="leadForm">
+    <label>First Name: <input name="lead_first_name" type="text" /></label>
+    <label>Last Name: <input name="lead_last_name" type="text" /></label>
+    <label>Email: <input name="lead_email" type="email" required /></label>
+    <label>Phone: <input name="lead_phone" type="tel" required /></label>
+    <label>Zip Code: <input name="zip_code" type="text" required /></label>
+
+    <label>Certificate Type:
+      <select name="certificate_type" required>
+        <option value="Jornaya">Jornaya</option>
+        <option value="Trusted Form">Trusted Form</option>
+      </select>
+    </label>
+
+    <label>Certificate ID: <input name="certificate_id" type="text" required /></label>
+    <label>Certificate URL: <input name="certificate_url" type="url" required /></label>
+    <label>Source URL: <input name="source_url" type="url" required /></label>
+    <label>IP Address: <input name="ip_address" type="text" required /></label>
+
+    <fieldset>
+      <legend>Accident Details</legend>
+
+      <label>When did the accident happen?
+        <input name="incident_date_option_b" required placeholder="e.g. 2023 or MM-YYYY"/>
+      </label>
+
+      <label>Were you at fault?
+        <select name="were_you_at_fault" required>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </label>
+
+      <label>Were you injured?
+        <select name="were_you_injured" required>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </label>
+
+      <label>Do you have an attorney?
+        <select name="have_attorney" required>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </label>
+
+      <label>Did you receive medical treatment?
+        <select name="doctor_treatment" required>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </label>
+
+      <label>Describe your case:
+        <textarea name="comments"></textarea>
+      </label>
+    </fieldset>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="apiResponseContainer"></div>
+
+  <script>
+    document.getElementById("leadForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      const payload = {
+        arrived_at: new Date().toISOString(),
+        test_mode: true,
+        deal: "O8lBQPNX09bGV5prXkE1agDyJLK2Yd",
+        lead_first_name: formData.get("lead_first_name"),
+        lead_last_name: formData.get("lead_last_name"),
+        lead_email: formData.get("lead_email"),
+        lead_phone: formData.get("lead_phone"),
+        case_type: "Auto Accident",
+        zip_code: formData.get("zip_code"),
+        certificate_type: formData.get("certificate_type"),
+        certificate_id: formData.get("certificate_id"),
+        certificate_url: formData.get("certificate_url"),
+        source_url: formData.get("source_url"),
+        ip_address: formData.get("ip_address"),
+        fields: [
+          { ref: "incident_date_option_b", title: "When did the accident happen?", answer: formData.get("incident_date_option_b") },
+          { ref: "were_you_at_fault", title: "Were you at fault?", answer: formData.get("were_you_at_fault") },
+          { ref: "were_you_injured", title: "Were you injured?", answer: formData.get("were_you_injured") },
+          { ref: "have_attorney", title: "Do you have an attorney?", answer: formData.get("have_attorney") },
+          { ref: "doctor_treatment", title: "Did you receive medical treatment?", answer: formData.get("doctor_treatment") },
+          { ref: "comments", title: "Describe your case", answer: formData.get("comments") || "" }
+        ]
+      };
+
+      try {
+        const response = await fetch("/api/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        const output = document.createElement("pre");
+        output.textContent = JSON.stringify(result.apiResponse, null, 2);
+        document.getElementById("apiResponseContainer").innerHTML = "<h3>API Response:</h3>";
+        document.getElementById("apiResponseContainer").appendChild(output);
+
+      } catch (err) {
+        alert("An error occurred while submitting the form.");
+        console.error("Error submitting lead:", err);
+      }
+    });
+  </script>
+</body>
+</html>
