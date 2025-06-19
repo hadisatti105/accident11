@@ -8,6 +8,8 @@ const API_SECRET = process.env.API_SECRET;
 
 router.post("/submit", async (req, res) => {
   const payload = req.body;
+  
+  payload.test_mode = false;
 
   console.log("🔐 Using API Key:", API_KEY);
   console.log("📤 Sending payload to Accident.com API:");
