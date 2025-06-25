@@ -88,9 +88,8 @@
       <legend>Accident Details</legend>
 
       <label>When did the accident happen?
-       <input name="incident_date_option_b" type="date" required />
+        <input name="incident_date_option_b" type="date" required />
       </label>
-
 
       <label>Were you at fault?
         <select name="were_you_at_fault" required>
@@ -135,6 +134,10 @@
       e.preventDefault();
       const formData = new FormData(this);
 
+      const rawDate = formData.get("incident_date_option_b"); // e.g., 2025-06-20
+      const [year, month, day] = rawDate.split("-");
+      const formattedDate = `${month}-${day}-${year}`; // MM-DD-YYYY
+
       const payload = {
         arrived_at: new Date().toISOString(),
         test_mode: false,
@@ -152,19 +155,35 @@
         ip_address: formData.get("ip_address"),
         fields: [
           {
-  ref: "incident_date_option_b",
-  title: "When did the accident happen?",
-  answer: (() => {
-    const raw = formData.get("incident_date_option_b"); // "2024-11-25"
-    const [year, month, day] = raw.split("-");
-    return `${month}-${day}-${year}`; // "11-25-2024"
-  })()
-}
-          { ref: "were_you_at_fault", title: "Were you at fault?", answer: formData.get("were_you_at_fault") },
-          { ref: "were_you_injured", title: "Were you injured?", answer: formData.get("were_you_injured") },
-          { ref: "have_attorney", title: "Do you have an attorney?", answer: formData.get("have_attorney") },
-          { ref: "doctor_treatment", title: "Did you receive medical treatment?", answer: formData.get("doctor_treatment") },
-          { ref: "comments", title: "Describe your case", answer: formData.get("comments") || "" }
+            ref: "incident_date_option_b",
+            title: "When did the accident happen?",
+            answer: formattedDate
+          },
+          {
+            ref: "were_you_at_fault",
+            title: "Were you at fault?",
+            answer: formData.get("were_you_at_fault")
+          },
+          {
+            ref: "were_you_injured",
+            title: "Were you injured?",
+            answer: formData.get("were_you_injured")
+          },
+          {
+            ref: "have_attorney",
+            title: "Do you have an attorney?",
+            answer: formData.get("have_attorney")
+          },
+          {
+            ref: "doctor_treatment",
+            title: "Did you receive medical treatment?",
+            answer: formData.get("doctor_treatment")
+          },
+          {
+            ref: "comments",
+            title: "Describe your case",
+            answer: formData.get("comments") || ""
+          }
         ]
       };
 
