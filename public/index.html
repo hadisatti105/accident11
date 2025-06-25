@@ -151,7 +151,15 @@
         source_url: formData.get("source_url"),
         ip_address: formData.get("ip_address"),
         fields: [
-          { ref: "incident_date_option_b", title: "When did the accident happen?", answer: formData.get("incident_date_option_b") },
+          {
+  ref: "incident_date_option_b",
+  title: "When did the accident happen?",
+  answer: (() => {
+    const raw = formData.get("incident_date_option_b"); // "2024-11"
+    const [year, month] = raw.split("-");
+    return `${month}-${year}`; // "11-2024"
+  })()
+  }
           { ref: "were_you_at_fault", title: "Were you at fault?", answer: formData.get("were_you_at_fault") },
           { ref: "were_you_injured", title: "Were you injured?", answer: formData.get("were_you_injured") },
           { ref: "have_attorney", title: "Do you have an attorney?", answer: formData.get("have_attorney") },
